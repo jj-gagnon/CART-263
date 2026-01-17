@@ -105,8 +105,7 @@ function draw() {
         rect_3_color.r,
         rect_3_color.b,
         rect_3_color.b)
-    // drawRect(rect_2_x, rect_2_y, w, h, r, g, b)
-    // drawRect(rect_3_x, rect_3_y, w, h, r, g, b)
+
 }
 
 function drawRect(x, y, w, h, r, g, b) {
