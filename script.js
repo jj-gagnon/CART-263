@@ -5,9 +5,10 @@ const width = window.innerWidth, height = window.innerHeight;
 // init
 
 const camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 100);
-camera.position.z = 10;
-camera.position.y = 3;
-
+// camera.position.z = 10;
+// camera.position.y = 3;
+camera.position.z = 1;
+camera.position.y = 4;
 const scene = new THREE.Scene();
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -58,32 +59,38 @@ var previous_mesh = g
 for (let i = 0; i < 100; i++) {
 	// geometry = new THREE.BoxGeometry(box_width, Math.random() * box_height, box_width)
 	var prev_box_height = box_height
-	box_height = Math.random() 
-	
+	// box_height = Math.random()**20 + 0.1
+	box_height = Math.random()
+
 	// box_height = 4
 	geometry = new THREE.BoxGeometry(box_width, box_height, box_width)
-	
+
 	geometry.translate(0, box_height / 2, 0)
-	
-	
+
+
 	var mesh_2 = new THREE.Mesh(geometry, material);
-	
+
 
 	mesh_2.position.y = prev_box_height
-	
-	
 
 
-	mesh_2.rotation.z = Math.PI * Math.random() * 2
+
+	var z_rot_limit = (Math.PI / 90) * 15
+	mesh_2.rotation.z = THREE.MathUtils.mapLinear(
+		Math.random(),
+		0,
+		1,
+		Math.PI * -1 + z_rot_limit,
+		Math.PI - z_rot_limit
+	)
+	
 	mesh_2.rotation.y = Math.PI * Math.random() * 2
-	// mesh_2.rotation.z = Math.PI * 0.1 * 2
-	// mesh_2.rotation.y = Math.PI * 0.01 * 2
 
 
 	// mesh_2.rotation.x = Math.PI * Math.random() * 2
 	previous_mesh.add(mesh_2)
 	previous_mesh = mesh_2
-	
+
 
 
 
