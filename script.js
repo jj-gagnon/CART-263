@@ -30,22 +30,35 @@ controls.target = new THREE.Vector3(0, camera.position.y / 2, 0)
 
 
 
-var box_height = 0,
-	box_width = 0.08;
+
+
+
+var box_height = Math.random() * 4,
+	box_width = 0.2
+
 var geometry = new THREE.BoxGeometry(box_width, box_height, box_width);
+geometry.translate(0,box_height/2,0)
+geometry.computeBoundingBox()
 
 const material = new THREE.MeshNormalMaterial();
 
+
+let first_segment = new THREE.Mesh(geometry, material)
+scene.add(first_segment)
 
 var g = new THREE.Group()
 scene.add(g)
 
 var coord = new THREE.AxesHelper()
 scene.add(coord)
-var previous_mesh = g
+
+
+
+var previous_mesh = first_segment
 
 var obbs = []
 var objects = []
+objects.push(first_segment)
 
 for (let i = 0; i < 5; i++) {
 	var prev_box_height = box_height
@@ -57,9 +70,9 @@ for (let i = 0; i < 5; i++) {
 
 	geometry.translate(0, box_height / 2, 0)
 
-	mesh_line_seg.userData.obb = new OBB()
+	
 	geometry.computeBoundingBox()
-	mesh_line_seg.userData.obb.fromBox3(geometry.boundingBox)
+	
 
 
 
@@ -79,25 +92,24 @@ for (let i = 0; i < 5; i++) {
 	// console.log(mesh_line_seg.matrixWorld)
 
 	mesh_line_seg.rotation.y = Math.PI * Math.random() * 2
-	mesh_line_seg.updateMatrixWorld(true)
+	// mesh_line_seg.updateMatrixWorld(true)
 	// mesh_line_seg.updateWorldMatrix()
 	// console.log(mesh_line_seg.matrixWorld)
 
 
 
 
-	// previous_mesh.add(mesh_line_seg)
+	previous_mesh.add(mesh_line_seg)
 	previous_mesh = mesh_line_seg
 
-	mesh_line_seg.updateMatrixWorld()
-	mesh_line_seg.userData.obb.applyMatrix4(mesh_line_seg.matrixWorld)
+	
 
-	for (const obb of obbs) {
-		if (mesh_line_seg.userData.obb.intersectsOBB(obb)) {
-			// console.log('interesect')
-		}
-	}
-	obbs.push(mesh_line_seg.userData.obb)
+	// for (const obb of obbs) {
+	// 	if (mesh_line_seg.userData.obb.intersectsOBB(obb)) {
+	// 		// console.log('interesect')
+	// 	}
+	// }
+	// obbs.push(mesh_line_seg.userData.obb)
 	objects.push(mesh_line_seg)
 
 
@@ -116,7 +128,21 @@ for (let i = 0; i < 5; i++) {
 
 var mesh_1_geo = new THREE.BoxGeometry(1, 1, 1)
 mesh_1_geo.computeBoundingBox()
+mesh_1_geo.translate(0,-1,0)
+
+
+
 var mesh_1 = new THREE.Mesh(mesh_1_geo, material)
+
+mesh_1.position.x = -2
+mesh_1.position.y = 2
+
+// mesh_1.rotation.z = 2
+scene.add(mesh_1)
+
+
+
+
 
 
 var mesh_2_geo = new THREE.BoxGeometry(2, 2, 2)
@@ -141,12 +167,11 @@ var mesh_2 = new THREE.Mesh(mesh_2_geo, material)
 
 // mesh_2.userData.obb.applyMatrix4(mesh_2.matrixWorld)
 
-mesh_1.position.x = -2
-mesh_1.position.y = 2
+
 
 mesh_2.position.x = 2.1
 
-objects = []
+// objects = []
 
 
 // mesh_2.add(mesh_1)
@@ -156,7 +181,10 @@ objects = []
 // scene.add(mesh_1)
 
 var mesh_3_geo = new THREE.BoxGeometry(1,4,2)
+
+// mesh_3_geo.translate(0,4,0)
 mesh_3_geo.computeBoundingBox()
+
 var mesh_3 = new THREE.Mesh(mesh_3_geo, material)
 
 mesh_2.add(mesh_3)
@@ -165,11 +193,13 @@ objects.push(mesh_3)
 objects.push(mesh_2)
 objects.push(mesh_1)
 
-mesh_1.rotation.z = 2
 
-mesh_1.add(mesh_2)
 
-scene.add(mesh_1)
+// mesh_1.add(mesh_2)
+scene.add(mesh_2)
+
+// mesh_1.geometry.computeBoundingBox()
+
 // scene.add(mesh_2)
 
 
@@ -177,8 +207,11 @@ scene.add(mesh_1)
 
 
 // scene.add(mesh_1)
+// mesh_3.geometry.translate(0,2,0)
+// const box_helper = new THREE.BoxHelper(mesh_3, 0xff0000)
 
-
+// mesh_2.add(box_helper)
+// scene.add(box_helper)
 
 
 
@@ -189,6 +222,7 @@ function create_obbs(meshes) {
 	for (const mesh of meshes) {
 		mesh.updateMatrixWorld()
 	}
+
 
 	for (const mesh of meshes) {
 		mesh.userData.obb = new OBB()
@@ -211,15 +245,15 @@ function create_obb_helpers(meshes) {
 	for (const mesh of meshes) {
 		var obbHelper = new THREE.Mesh(mesh.geometry, helper_material);
 		obbHelper.position.copy(mesh.userData.obb.center);
-
+		
+		
 		var m = new THREE.Matrix4()
 		m.setFromMatrix3(mesh.userData.obb.rotation)
-		// obbHelper.rotation.setFromRotationMatrix(mesh.userData.obb.rotation);
-		obbHelper.rotation.setFromRotationMatrix(m);
+		// obbHelper.rotation.setFromRotationMatrix(m);
 
-		// console.log(mesh.userData.obb.rotation)
-		// obbHelper.scale.copy(mesh.userData.obb.halfSize).multiplyScalar(2);
+		
 		scene.add(obbHelper)
+		// mesh.add(obbHelper)
 	}
 
 	// var obbHelper = new THREE.Mesh(, helper_material);
@@ -288,7 +322,8 @@ function onDocumentMouseMove(event) {
 			// console.log("mesh")
 
 		} else {
-			object.material = new THREE.MeshBasicMaterial({ color: "blue" })
+			// object.material = new THREE.MeshBasicMaterial({ color: "blue" })
+			object.material = material
 		}
 
 	}
