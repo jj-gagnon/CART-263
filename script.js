@@ -30,22 +30,35 @@ controls.target = new THREE.Vector3(0, camera.position.y / 2, 0)
 
 
 
-var box_height = 0,
-	box_width = 0.08;
+
+
+
+var box_height = Math.random() * 4,
+	box_width = 0.2
+
 var geometry = new THREE.BoxGeometry(box_width, box_height, box_width);
+geometry.translate(0,box_height/2,0)
+geometry.computeBoundingBox()
 
 const material = new THREE.MeshNormalMaterial();
 
+
+let first_segment = new THREE.Mesh(geometry, material)
+scene.add(first_segment)
 
 var g = new THREE.Group()
 scene.add(g)
 
 var coord = new THREE.AxesHelper()
 scene.add(coord)
-var previous_mesh = g
+
+
+
+var previous_mesh = first_segment
 
 var obbs = []
 var objects = []
+objects.push(first_segment)
 
 for (let i = 0; i < 5; i++) {
 	var prev_box_height = box_height
@@ -57,9 +70,9 @@ for (let i = 0; i < 5; i++) {
 
 	geometry.translate(0, box_height / 2, 0)
 
-	mesh_line_seg.userData.obb = new OBB()
+	
 	geometry.computeBoundingBox()
-	mesh_line_seg.userData.obb.fromBox3(geometry.boundingBox)
+	
 
 
 
@@ -79,25 +92,24 @@ for (let i = 0; i < 5; i++) {
 	// console.log(mesh_line_seg.matrixWorld)
 
 	mesh_line_seg.rotation.y = Math.PI * Math.random() * 2
-	mesh_line_seg.updateMatrixWorld(true)
+	// mesh_line_seg.updateMatrixWorld(true)
 	// mesh_line_seg.updateWorldMatrix()
 	// console.log(mesh_line_seg.matrixWorld)
 
 
 
 
-	// previous_mesh.add(mesh_line_seg)
+	previous_mesh.add(mesh_line_seg)
 	previous_mesh = mesh_line_seg
 
-	mesh_line_seg.updateMatrixWorld()
-	mesh_line_seg.userData.obb.applyMatrix4(mesh_line_seg.matrixWorld)
+	
 
-	for (const obb of obbs) {
-		if (mesh_line_seg.userData.obb.intersectsOBB(obb)) {
-			// console.log('interesect')
-		}
-	}
-	obbs.push(mesh_line_seg.userData.obb)
+	// for (const obb of obbs) {
+	// 	if (mesh_line_seg.userData.obb.intersectsOBB(obb)) {
+	// 		// console.log('interesect')
+	// 	}
+	// }
+	// obbs.push(mesh_line_seg.userData.obb)
 	objects.push(mesh_line_seg)
 
 
@@ -113,72 +125,58 @@ for (let i = 0; i < 5; i++) {
 
 
 
-
-var mesh_1_geo = new THREE.BoxGeometry(1, 1, 1)
-mesh_1_geo.computeBoundingBox()
-var mesh_1 = new THREE.Mesh(mesh_1_geo, material)
-
-
-var mesh_2_geo = new THREE.BoxGeometry(2, 2, 2)
-mesh_2_geo.computeBoundingBox()
-var mesh_2 = new THREE.Mesh(mesh_2_geo, material)
-
-
-
-// mesh_1.userData.obb = new OBB()
-// mesh_1_geo.computeBoundingBox()
-
-// mesh_1.userData.obb.fromBox3(mesh_1_geo.boundingBox)
-// mesh_1.userData.obb.applyMatrix4(mesh_1.matrixWorld)
-
-
-// mesh_2.userData.obb = new OBB()
-// mesh_2_geo.translate(1.1, 0, 0)
-// mesh_2_geo.computeBoundingBox()
-// mesh_2.userData.obb.fromBox3(mesh_2_geo.boundingBox)
-// mesh_2.position.x = 1.0000
-// mesh_2.updateMatrixWorld()
-
-// mesh_2.userData.obb.applyMatrix4(mesh_2.matrixWorld)
-
-mesh_1.position.x = -2
-mesh_1.position.y = 2
-
-mesh_2.position.x = 2.1
-
 objects = []
+var mesh_1_geo = new THREE.BoxGeometry(1, 1, 1)
+
+mesh_1_geo.computeBoundingBox()
+mesh_1_geo.translate(0,-2,0)
+
+console.log("bounding box")
+console.log(mesh_1_geo.boundingBox)
 
 
-// mesh_2.add(mesh_1)
-// mesh_1.add(mesh_2)
 
-// scene.add(mesh_1)
-// scene.add(mesh_1)
+var mesh_1 = new THREE.Mesh(mesh_1_geo, material)
+// mesh_1.userData.y_trans = y_trans
 
-var mesh_3_geo = new THREE.BoxGeometry(1,4,2)
-mesh_3_geo.computeBoundingBox()
-var mesh_3 = new THREE.Mesh(mesh_3_geo, material)
+mesh_1.position.x = -1
+mesh_1.position.y = -1
 
-mesh_2.add(mesh_3)
-objects.push(mesh_3)
-
-objects.push(mesh_2)
-objects.push(mesh_1)
-
-mesh_1.rotation.z = 2
-
-mesh_1.add(mesh_2)
+// mesh_1.rotation.z = 1
 
 scene.add(mesh_1)
+
+objects.push(mesh_1)
+
+
+
+
+// var mesh_2_geo = new THREE.BoxGeometry(2, 2, 2)
+// mesh_2_geo.computeBoundingBox()
+// var mesh_2 = new THREE.Mesh(mesh_2_geo, material)
+
+
+
+
+// mesh_2.position.x = 2.1
+
+
+
+// var mesh_3_geo = new THREE.BoxGeometry(1,4,2)
+
+// mesh_3_geo.computeBoundingBox()
+
+// var mesh_3 = new THREE.Mesh(mesh_3_geo, material)
+
+// mesh_2.add(mesh_3)
+// objects.push(mesh_3)
+
+// objects.push(mesh_2)
+// objects.push(mesh_1)
+
+
+
 // scene.add(mesh_2)
-
-
-// mesh_1.add(mesh_2)
-
-
-// scene.add(mesh_1)
-
-
 
 
 
@@ -190,11 +188,15 @@ function create_obbs(meshes) {
 		mesh.updateMatrixWorld()
 	}
 
+
 	for (const mesh of meshes) {
 		mesh.userData.obb = new OBB()
 		mesh.userData.obb.fromBox3(mesh.geometry.boundingBox)
+		var m = mesh.matrixWorld
+		// console.log("orig m", m)
+		// m.setPosition(0,0,0)
 
-		mesh.userData.obb.applyMatrix4(mesh.matrixWorld)
+		mesh.userData.obb.applyMatrix4(m)
 	}
 }
 
@@ -209,19 +211,39 @@ function create_obb_helpers(meshes) {
 	const helper_material = new THREE.MeshBasicMaterial({ color: "purple", wireframe: true});
 
 	for (const mesh of meshes) {
-		var obbHelper = new THREE.Mesh(mesh.geometry, helper_material);
-		obbHelper.position.copy(mesh.userData.obb.center);
+		var obbHelper_geo = new THREE.BoxGeometry(1,1,1)
+		// obbHelper_geo.scale.copy(mesh.userData.obb.halfSize).multiplyScalar(2);
+		console.log(mesh.userData.obb.halfSize)
 
+
+		obbHelper_geo.scale(
+			mesh.userData.obb.halfSize.x * 2,
+			mesh.userData.obb.halfSize.y * 2,
+			mesh.userData.obb.halfSize.z * 2
+		)
+
+		var obbHelper = new THREE.Mesh(obbHelper_geo, helper_material);
+		
+		obbHelper.position.copy(mesh.userData.obb.center);
+		// obbHelper.position.copy(mesh.geometry.boundingBox.max);
+		// console.log('mesh position', mesh.geometry.boundingBox.max)
+		
+		
+		
 		var m = new THREE.Matrix4()
 		m.setFromMatrix3(mesh.userData.obb.rotation)
-		// obbHelper.rotation.setFromRotationMatrix(mesh.userData.obb.rotation);
 		obbHelper.rotation.setFromRotationMatrix(m);
-
-		// console.log(mesh.userData.obb.rotation)
-		// obbHelper.scale.copy(mesh.userData.obb.halfSize).multiplyScalar(2);
+		console.log(obbHelper.position)
+		
 		scene.add(obbHelper)
+		// mesh.add(obbHelper)
 	}
 
+
+
+
+
+	
 	// var obbHelper = new THREE.Mesh(, helper_material);
 	// obbHelper.position.copy(obb.center);
 
@@ -288,7 +310,8 @@ function onDocumentMouseMove(event) {
 			// console.log("mesh")
 
 		} else {
-			object.material = new THREE.MeshBasicMaterial({ color: "blue" })
+			// object.material = new THREE.MeshBasicMaterial({ color: "blue" })
+			object.material = material
 		}
 
 	}
