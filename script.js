@@ -125,11 +125,12 @@ for (let i = 0; i < 5; i++) {
 
 
 
-objects = []
-var mesh_1_geo = new THREE.BoxGeometry(1, 1, 1)
+// objects = []
+var mesh_1_box_height = 3
+var mesh_1_geo = new THREE.BoxGeometry(1, mesh_1_box_height, 1)
 
 mesh_1_geo.computeBoundingBox()
-mesh_1_geo.translate(0,-2,0)
+// mesh_1_geo.translate(0,-2,0)
 
 console.log("bounding box")
 console.log(mesh_1_geo.boundingBox)
@@ -139,14 +140,44 @@ console.log(mesh_1_geo.boundingBox)
 var mesh_1 = new THREE.Mesh(mesh_1_geo, material)
 // mesh_1.userData.y_trans = y_trans
 
-mesh_1.position.x = -1
-mesh_1.position.y = -1
+var pivot = new THREE.Group()
+scene.add(pivot)
+
+
+pivot.add(mesh_1)
+
+
+// mesh_1.position.x = -1
+mesh_1.position.y += mesh_1_box_height/2
+
+pivot.rotation.z += 1
+// pivot.updateWorldMatrix()
+// pivot.updateMatrixWorld()
+
+// console.log(pivot.matrixWorldAutoUpdate)
+// var axis = new THREE.Vector3(0.5, 0.5, 0.5).normalize()
+
 
 // mesh_1.rotation.z = 1
+var mesh_2_box_height = 2
+var mesh_2_geo = new THREE.BoxGeometry(1,2,1)
+mesh_2_geo.computeBoundingBox()
+var mesh_2 = new THREE.Mesh(mesh_2_geo, material)
 
-scene.add(mesh_1)
+var pivot_2 = new THREE.Group()
+mesh_1.add(pivot_2)
+pivot_2.position.y += mesh_1_box_height / 2
+pivot_2.add(mesh_2)
+mesh_2.position.y += mesh_2_box_height/2
+pivot_2.rotation.z += 1
+// pivot_2.updateWorldMatrix()
+
+
+
 
 objects.push(mesh_1)
+objects.push(mesh_2)
+
 
 
 
@@ -181,12 +212,20 @@ objects.push(mesh_1)
 
 
 
+
+
+
+
 create_obbs(objects)
 
 function create_obbs(meshes) {
-	for (const mesh of meshes) {
-		mesh.updateMatrixWorld()
-	}
+	// for (const mesh of meshes) {
+		// mesh.updateMatrixWorld()
+		// mesh.updateWorldMatrix(true)
+	// }
+	scene.traverse((c) => {
+		c.updateMatrixWorld()
+	})
 
 
 	for (const mesh of meshes) {
