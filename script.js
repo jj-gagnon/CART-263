@@ -34,7 +34,7 @@ var box_height = Math.random() * 4,
 	box_width = 0.2
 
 var geometry = new THREE.BoxGeometry(box_width, box_height, box_width);
-geometry.translate(0, box_height / 2, 0)
+// geometry.translate(0, box_height / 2, 0)
 geometry.computeBoundingBox()
 
 const material = new THREE.MeshNormalMaterial();
@@ -53,30 +53,35 @@ scene.add(coord)
 
 var previous_mesh = first_segment
 
-var obbs = []
+
 var objects = []
 objects.push(first_segment)
 
-for (let i = 0; i < 5; i++) {
+for (let i = 0; i < 50; i++) {
 	var prev_box_height = box_height
 	box_height = Math.random() * 4
 
 	geometry = new THREE.BoxGeometry(box_width, box_height, box_width)
+	geometry.computeBoundingBox()
 
 	var mesh_line_seg = new THREE.Mesh(geometry, material);
 
-	geometry.translate(0, box_height / 2, 0)
+	var pivot = new THREE.Group()
+	previous_mesh.add(pivot)
+	pivot.position.y = prev_box_height/2
+	
+
+	pivot.add(mesh_line_seg)
+	
 
 
-	geometry.computeBoundingBox()
 
 
-
-
-	mesh_line_seg.position.y = prev_box_height
+	// mesh_line_seg.position.y = prev_box_height
+	mesh_line_seg.position.y = box_height/2
 
 	var z_rot_limit = (Math.PI / 90) * 15
-	mesh_line_seg.rotation.z = THREE.MathUtils.mapLinear(
+	pivot.rotation.z = THREE.MathUtils.mapLinear(
 		Math.random(),
 		0,
 		1,
@@ -84,11 +89,12 @@ for (let i = 0; i < 5; i++) {
 		Math.PI - z_rot_limit
 	)
 
-	mesh_line_seg.rotation.y = Math.PI * Math.random() * 2
+	// mesh_line_seg.rotation.y = Math.PI * Math.random() * 2
+	pivot.rotation.y = Math.PI * Math.random() * 2
 
 
 
-	previous_mesh.add(mesh_line_seg)
+	// previous_mesh.add(mesh_line_seg)
 	previous_mesh = mesh_line_seg
 
 
@@ -100,7 +106,7 @@ for (let i = 0; i < 5; i++) {
 
 
 }
-test_meshes()
+// test_meshes()
 function test_meshes() {
 
 	var objects = []
