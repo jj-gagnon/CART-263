@@ -30,9 +30,6 @@ controls.target = new THREE.Vector3(0, camera.position.y / 2, 0)
 
 
 
-
-
-
 var box_height = Math.random() * 4,
 	box_width = 0.2
 
@@ -87,15 +84,7 @@ for (let i = 0; i < 5; i++) {
 		Math.PI - z_rot_limit
 	)
 
-	// mesh_line_seg.matrixAutoUpdate= false
-
-	// console.log(mesh_line_seg.matrixWorld)
-
 	mesh_line_seg.rotation.y = Math.PI * Math.random() * 2
-	// mesh_line_seg.updateMatrixWorld(true)
-	// mesh_line_seg.updateWorldMatrix()
-	// console.log(mesh_line_seg.matrixWorld)
-
 
 
 
@@ -104,12 +93,6 @@ for (let i = 0; i < 5; i++) {
 
 	
 
-	// for (const obb of obbs) {
-	// 	if (mesh_line_seg.userData.obb.intersectsOBB(obb)) {
-	// 		// console.log('interesect')
-	// 	}
-	// }
-	// obbs.push(mesh_line_seg.userData.obb)
 	objects.push(mesh_line_seg)
 
 
@@ -117,11 +100,6 @@ for (let i = 0; i < 5; i++) {
 
 
 }
-// for (const obb of obbs) {
-// console.log(obb)
-// }
-// console.log(obbs)
-
 
 
 
@@ -130,7 +108,6 @@ var mesh_1_box_height = 3
 var mesh_1_geo = new THREE.BoxGeometry(1, mesh_1_box_height, 1)
 
 mesh_1_geo.computeBoundingBox()
-// mesh_1_geo.translate(0,-2,0)
 
 console.log("bounding box")
 console.log(mesh_1_geo.boundingBox)
@@ -151,14 +128,7 @@ pivot.add(mesh_1)
 mesh_1.position.y += mesh_1_box_height/2
 
 pivot.rotation.z += 1
-// pivot.updateWorldMatrix()
-// pivot.updateMatrixWorld()
 
-// console.log(pivot.matrixWorldAutoUpdate)
-// var axis = new THREE.Vector3(0.5, 0.5, 0.5).normalize()
-
-
-// mesh_1.rotation.z = 1
 var mesh_2_box_height = 2
 var mesh_2_geo = new THREE.BoxGeometry(1,2,1)
 mesh_2_geo.computeBoundingBox()
@@ -170,9 +140,6 @@ pivot_2.position.y += mesh_1_box_height / 2
 pivot_2.add(mesh_2)
 mesh_2.position.y += mesh_2_box_height/2
 pivot_2.rotation.z += 1
-// pivot_2.updateWorldMatrix()
-
-
 
 
 objects.push(mesh_1)
@@ -182,47 +149,10 @@ objects.push(mesh_2)
 
 
 
-// var mesh_2_geo = new THREE.BoxGeometry(2, 2, 2)
-// mesh_2_geo.computeBoundingBox()
-// var mesh_2 = new THREE.Mesh(mesh_2_geo, material)
-
-
-
-
-// mesh_2.position.x = 2.1
-
-
-
-// var mesh_3_geo = new THREE.BoxGeometry(1,4,2)
-
-// mesh_3_geo.computeBoundingBox()
-
-// var mesh_3 = new THREE.Mesh(mesh_3_geo, material)
-
-// mesh_2.add(mesh_3)
-// objects.push(mesh_3)
-
-// objects.push(mesh_2)
-// objects.push(mesh_1)
-
-
-
-// scene.add(mesh_2)
-
-
-
-
-
-
-
-
 create_obbs(objects)
 
 function create_obbs(meshes) {
-	// for (const mesh of meshes) {
-		// mesh.updateMatrixWorld()
-		// mesh.updateWorldMatrix(true)
-	// }
+
 	scene.traverse((c) => {
 		c.updateMatrixWorld()
 	})
@@ -232,8 +162,6 @@ function create_obbs(meshes) {
 		mesh.userData.obb = new OBB()
 		mesh.userData.obb.fromBox3(mesh.geometry.boundingBox)
 		var m = mesh.matrixWorld
-		// console.log("orig m", m)
-		// m.setPosition(0,0,0)
 
 		mesh.userData.obb.applyMatrix4(m)
 	}
@@ -251,9 +179,6 @@ function create_obb_helpers(meshes) {
 
 	for (const mesh of meshes) {
 		var obbHelper_geo = new THREE.BoxGeometry(1,1,1)
-		// obbHelper_geo.scale.copy(mesh.userData.obb.halfSize).multiplyScalar(2);
-		console.log(mesh.userData.obb.halfSize)
-
 
 		obbHelper_geo.scale(
 			mesh.userData.obb.halfSize.x * 2,
@@ -264,57 +189,17 @@ function create_obb_helpers(meshes) {
 		var obbHelper = new THREE.Mesh(obbHelper_geo, helper_material);
 		
 		obbHelper.position.copy(mesh.userData.obb.center);
-		// obbHelper.position.copy(mesh.geometry.boundingBox.max);
-		// console.log('mesh position', mesh.geometry.boundingBox.max)
-		
-		
-		
+
+	
 		var m = new THREE.Matrix4()
 		m.setFromMatrix3(mesh.userData.obb.rotation)
 		obbHelper.rotation.setFromRotationMatrix(m);
-		console.log(obbHelper.position)
 		
 		scene.add(obbHelper)
-		// mesh.add(obbHelper)
 	}
 
 
-
-
-
-	
-	// var obbHelper = new THREE.Mesh(, helper_material);
-	// obbHelper.position.copy(obb.center);
-
-
-	// console.log(obb.rotation.elements)
-	// var elements = obb.rotation.elements
-	// for (let i = 0; i < elements.length; i ++){
-	// 	if (elements[i] < 0.001){
-	// 		elements[i] = 0
-	// 	}
-	// }
-	// console.log(obb.rotation)
-	// obb.rotation.set([
-	// 0,0,0,0,0,0,0,0,0
-	// 1,1,1,1,1,1,1,1,1
-	// ])
-	// console.log(obb.rotation)
-	// obbHelper.rotation.setFromRotationMatrix(obb.rotation);
-	// obbHelper.setFromRotationMatrix(obb.rotation);
-	// console.log(obbHelper.rotation)
-
-
-	// obbHelper.scale.copy(obb.halfSize).multiplyScalar(2);
-
 }
-
-
-
-
-// var bool = mesh_1.userData.obb.intersectsOBB(mesh_2.userData.obb)
-// // console.log(bool)
-
 
 
 
@@ -344,12 +229,9 @@ function onDocumentMouseMove(event) {
 		if (obb.intersectRay(ray, intersectionPoint) !== null) {
 
 			const distance = ray.origin.distanceTo(intersectionPoint);
-			// intersections.push({ distance: distance, object: object });
 			object.material = new THREE.MeshBasicMaterial({ color: "red" })
-			// console.log("mesh")
 
 		} else {
-			// object.material = new THREE.MeshBasicMaterial({ color: "blue" })
 			object.material = material
 		}
 
@@ -357,73 +239,11 @@ function onDocumentMouseMove(event) {
 
 }
 
-
-const helper_geo = new THREE.BoxGeometry(1, 1, 1);
-// const helper_material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-const helper_material = new THREE.MeshBasicMaterial({ color: "purple" });
-var obbHelper;
-for (const obb of obbs) {
-	obbHelper = new THREE.Mesh(helper_geo, helper_material);
-	obbHelper.position.copy(obb.center);
-
-
-	// console.log(obb.rotation.elements)
-	var elements = obb.rotation.elements
-	// for (let i = 0; i < elements.length; i ++){
-	// 	if (elements[i] < 0.001){
-	// 		elements[i] = 0
-	// 	}
-	// }
-	// console.log(obb.rotation)
-	// obb.rotation.set([
-	// 0,0,0,0,0,0,0,0,0
-	// 1,1,1,1,1,1,1,1,1
-	// ])
-	// console.log(obb.rotation)
-	// obbHelper.rotation.setFromRotationMatrix(obb.rotation);
-	// obbHelper.setFromRotationMatrix(obb.rotation);
-	// console.log(obbHelper.rotation)
-
-
-	obbHelper.scale.copy(obb.halfSize).multiplyScalar(2);
-	// scene.add(obbHelper)
-}
-
-obbHelper = new THREE.Mesh(helper_geo, helper_material);
-// scene.add(obbHelper)
-
-
 function animate(time) {
 
 
 	time = time * 0.001
 	
-
-
-	// mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-	// mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
-
-	// raycaster.setFromCamera(mouse, camera);
-
-	// const intersectionPoint = new THREE.Vector3();
-	// const intersections = [];
-
-	// for (let i = 0, il = objects.length; i < il; i++) {
-
-	// 	const object = objects[i];
-	// 	const obb = object.userData.obb;
-
-	// 	const ray = raycaster.ray;
-
-	// 	if (obb.intersectRay(ray, intersectionPoint) !== null) {
-
-	// 		const distance = ray.origin.distanceTo(intersectionPoint);
-	// 		intersections.push({ distance: distance, object: object });
-
-	// 	}
-
-	// }
-
 
 	controls.update();
 	renderer.render(scene, camera);
