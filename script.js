@@ -34,7 +34,7 @@ var box_height = Math.random() * 4,
 	box_width = 0.2
 
 var geometry = new THREE.BoxGeometry(box_width, box_height, box_width);
-geometry.translate(0,box_height/2,0)
+geometry.translate(0, box_height / 2, 0)
 geometry.computeBoundingBox()
 
 const material = new THREE.MeshNormalMaterial();
@@ -67,9 +67,9 @@ for (let i = 0; i < 5; i++) {
 
 	geometry.translate(0, box_height / 2, 0)
 
-	
+
 	geometry.computeBoundingBox()
-	
+
 
 
 
@@ -91,7 +91,7 @@ for (let i = 0; i < 5; i++) {
 	previous_mesh.add(mesh_line_seg)
 	previous_mesh = mesh_line_seg
 
-	
+
 
 	objects.push(mesh_line_seg)
 
@@ -100,50 +100,54 @@ for (let i = 0; i < 5; i++) {
 
 
 }
+test_meshes()
+function test_meshes() {
+
+	var objects = []
+	var mesh_1_box_height = 3
+	var mesh_1_geo = new THREE.BoxGeometry(1, mesh_1_box_height, 1)
+
+	mesh_1_geo.computeBoundingBox()
+
+	console.log("bounding box")
+	console.log(mesh_1_geo.boundingBox)
 
 
 
-// objects = []
-var mesh_1_box_height = 3
-var mesh_1_geo = new THREE.BoxGeometry(1, mesh_1_box_height, 1)
+	var mesh_1 = new THREE.Mesh(mesh_1_geo, material)
+	// mesh_1.userData.y_trans = y_trans
 
-mesh_1_geo.computeBoundingBox()
-
-console.log("bounding box")
-console.log(mesh_1_geo.boundingBox)
+	var pivot = new THREE.Group()
+	scene.add(pivot)
 
 
-
-var mesh_1 = new THREE.Mesh(mesh_1_geo, material)
-// mesh_1.userData.y_trans = y_trans
-
-var pivot = new THREE.Group()
-scene.add(pivot)
+	pivot.add(mesh_1)
 
 
-pivot.add(mesh_1)
+	// mesh_1.position.x = -1
+	mesh_1.position.y += mesh_1_box_height / 2
+
+	pivot.rotation.z += 1
+
+	var mesh_2_box_height = 2
+	var mesh_2_geo = new THREE.BoxGeometry(1, 2, 1)
+	mesh_2_geo.computeBoundingBox()
+	var mesh_2 = new THREE.Mesh(mesh_2_geo, material)
+
+	var pivot_2 = new THREE.Group()
+	mesh_1.add(pivot_2)
+	pivot_2.position.y += mesh_1_box_height / 2
+	pivot_2.add(mesh_2)
+	mesh_2.position.y += mesh_2_box_height / 2
+	pivot_2.rotation.z += 1
 
 
-// mesh_1.position.x = -1
-mesh_1.position.y += mesh_1_box_height/2
+	objects.push(mesh_1)
+	objects.push(mesh_2)
+	create_obbs(objects)
+	create_obb_helpers(objects)
+}
 
-pivot.rotation.z += 1
-
-var mesh_2_box_height = 2
-var mesh_2_geo = new THREE.BoxGeometry(1,2,1)
-mesh_2_geo.computeBoundingBox()
-var mesh_2 = new THREE.Mesh(mesh_2_geo, material)
-
-var pivot_2 = new THREE.Group()
-mesh_1.add(pivot_2)
-pivot_2.position.y += mesh_1_box_height / 2
-pivot_2.add(mesh_2)
-mesh_2.position.y += mesh_2_box_height/2
-pivot_2.rotation.z += 1
-
-
-objects.push(mesh_1)
-objects.push(mesh_2)
 
 
 
@@ -175,10 +179,10 @@ function create_obbs(meshes) {
 create_obb_helpers(objects)
 
 function create_obb_helpers(meshes) {
-	const helper_material = new THREE.MeshBasicMaterial({ color: "purple", wireframe: true});
+	const helper_material = new THREE.MeshBasicMaterial({ color: "purple", wireframe: true });
 
 	for (const mesh of meshes) {
-		var obbHelper_geo = new THREE.BoxGeometry(1,1,1)
+		var obbHelper_geo = new THREE.BoxGeometry(1, 1, 1)
 
 		obbHelper_geo.scale(
 			mesh.userData.obb.halfSize.x * 2,
@@ -187,14 +191,14 @@ function create_obb_helpers(meshes) {
 		)
 
 		var obbHelper = new THREE.Mesh(obbHelper_geo, helper_material);
-		
+
 		obbHelper.position.copy(mesh.userData.obb.center);
 
-	
+
 		var m = new THREE.Matrix4()
 		m.setFromMatrix3(mesh.userData.obb.rotation)
 		obbHelper.rotation.setFromRotationMatrix(m);
-		
+
 		scene.add(obbHelper)
 	}
 
@@ -219,23 +223,26 @@ function onDocumentMouseMove(event) {
 	const intersectionPoint = new THREE.Vector3();
 	const intersections = [];
 
-	for (let i = 0, il = objects.length; i < il; i++) {
+	
+	scene.traverse((object) => {
 
-		const object = objects[i];
-		const obb = object.userData.obb;
+		
+		if ("obb" in object.userData) {
+			const obb = object.userData.obb;
 
-		const ray = raycaster.ray;
+			const ray = raycaster.ray;
 
-		if (obb.intersectRay(ray, intersectionPoint) !== null) {
+			if (obb.intersectRay(ray, intersectionPoint) !== null) {
 
-			const distance = ray.origin.distanceTo(intersectionPoint);
-			object.material = new THREE.MeshBasicMaterial({ color: "red" })
+				const distance = ray.origin.distanceTo(intersectionPoint);
+				object.material = new THREE.MeshBasicMaterial({ color: "red" })
 
-		} else {
-			object.material = material
+			} else {
+				object.material = material
+			}
 		}
 
-	}
+	})
 
 }
 
@@ -243,7 +250,7 @@ function animate(time) {
 
 
 	time = time * 0.001
-	
+
 
 	controls.update();
 	renderer.render(scene, camera);
