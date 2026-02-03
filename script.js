@@ -9,7 +9,7 @@ const width = window.innerWidth, height = window.innerHeight;
 // init
 
 
-const camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 100);
+const camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 1000);
 
 camera.position.z = 10;
 camera.position.y = 4;
@@ -61,10 +61,11 @@ var objects = []
 objects.push(first_segment)
 
 var line_counter = 0
-// for (let i = 0; i < 20; i++) {
-while (line_counter < 100) {
-	// var prev_box_height = box_height
-	var box_height = Math.random() * 4 + box_width
+
+while (line_counter < 30) {
+	
+	var box_height = ((Math.random()) ** 6) * 4 + box_width *1.5
+	
 
 	geometry = new THREE.BoxGeometry(box_width, box_height, box_width)
 	geometry.computeBoundingBox()
@@ -74,17 +75,13 @@ while (line_counter < 100) {
 
 	var pivot = new THREE.Group()
 	previous_mesh.add(pivot)
-	// pivot.position.y = prev_box_height / 2
+	
 	pivot.position.y = previous_mesh.userData.height / 2
 
 
 	pivot.add(mesh_line_seg)
 
 
-
-
-
-	// mesh_line_seg.position.y = prev_box_height
 	mesh_line_seg.position.y = box_height / 2
 
 	var z_rot_limit = (Math.PI / 90) * 15
@@ -96,16 +93,9 @@ while (line_counter < 100) {
 		Math.PI - z_rot_limit
 	)
 
-	// mesh_line_seg.rotation.y = Math.PI * Math.random() * 2
 	pivot.rotation.y = Math.PI * Math.random() * 2
 
-
-
-
-	// previous_mesh = mesh_line_seg
-
 	create_obbs([mesh_line_seg])
-
 
 
 	var obb = mesh_line_seg.userData.obb
@@ -118,7 +108,7 @@ while (line_counter < 100) {
 			objects[i].userData.obb)) {
 			console.log("intersecting detected")
 			is_intersecting = true
-			
+
 			break
 		}
 	}
@@ -136,69 +126,9 @@ while (line_counter < 100) {
 	}
 
 
-	// for (let i = 0; i < objects.length - 2; i++) {
-
-	// 	if (obb.intersectsOBB(
-	// 		objects[i].userData.obb)) {
-
-	// 		var intersecting = true
-	// 		while (intersecting) {
-
-	// 			var z_rot_limit = (Math.PI / 90) * 15
-	// 			pivot.rotation.z = THREE.MathUtils.mapLinear(
-	// 				Math.random(),
-	// 				0,
-	// 				1,
-	// 				Math.PI * -1 + z_rot_limit,
-	// 				Math.PI - z_rot_limit
-	// 			)
-
-	// 			pivot.rotation.y = Math.PI * Math.random() * 2
-
-	// 			create_obbs([mesh_line_seg])
-
-	// 			intersecting = false
-	// 		}
-	// 	}
-	// }
-}
-
-// console.log(objects[1])
-// console.log(objects[1].parent)
-// console.log(objects[1].parent.parent)
-// console.log( in objects[1].children[0])
-// console.log(objects[1]?.children[0]?.children[0]?.id)
-
-// var hey = {you: "6"}
-// console.log(hey)
-// console.log("parent" in hey.hey)
-
-for (const mesh_i of objects) {
-	// console.log(mesh_i?.children[0]?.children[0]?.id == 10)
-	// continue
-	for (const mesh_j of objects) {
-
-		// console.log(mesh_j.parent)
-
-		if (mesh_i.id === mesh_j.id
-			|| mesh_i.parent.parent.id === mesh_j.id
-			|| mesh_i?.children[0]?.children[0]?.id === mesh_j.id) {
-			// console.log("continue")
-			continue
-		}
-		if (mesh_i.userData.obb.intersectsOBB(
-			mesh_j.userData.obb
-		)) {
-			console.log("intersection scanner")
-		}
-
-
-	}
-
 }
 
 
-// test_meshes()
 function test_meshes() {
 
 	var objects = []
@@ -274,7 +204,7 @@ function create_obbs(meshes) {
 
 
 
-create_obb_helpers(objects)
+// create_obb_helpers(objects)
 
 function create_obb_helpers(meshes) {
 	const helper_material = new THREE.MeshBasicMaterial({ color: "purple", wireframe: true });
