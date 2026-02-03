@@ -50,7 +50,7 @@ scene.add(g)
 var coord = new THREE.AxesHelper()
 scene.add(coord)
 
-first_segment.userData.height = box_height
+
 
 var previous_mesh = first_segment
 
@@ -60,22 +60,18 @@ create_obbs([first_segment])
 var objects = []
 objects.push(first_segment)
 
-var line_counter = 0
-// for (let i = 0; i < 20; i++) {
-while (line_counter < 100) {
-	// var prev_box_height = box_height
-	var box_height = Math.random() * 4 + box_width
+for (let i = 0; i < 10; i++) {
+	var prev_box_height = box_height
+	box_height = Math.random() * 4
 
 	geometry = new THREE.BoxGeometry(box_width, box_height, box_width)
 	geometry.computeBoundingBox()
 
 	var mesh_line_seg = new THREE.Mesh(geometry, material);
-	mesh_line_seg.userData.height = box_height
 
 	var pivot = new THREE.Group()
 	previous_mesh.add(pivot)
-	// pivot.position.y = prev_box_height / 2
-	pivot.position.y = previous_mesh.userData.height / 2
+	pivot.position.y = prev_box_height / 2
 
 
 	pivot.add(mesh_line_seg)
@@ -101,40 +97,30 @@ while (line_counter < 100) {
 
 
 
-
-	// previous_mesh = mesh_line_seg
+	
+	previous_mesh = mesh_line_seg
 
 	create_obbs([mesh_line_seg])
 
-
+	objects.push(mesh_line_seg)
 
 	var obb = mesh_line_seg.userData.obb
 
 	var is_intersecting = false
 
-	for (let i = 0; i < objects.length - 1; i++) {
+	for (let i = 0; i < objects.length - 2; i++) {
 
 		if (obb.intersectsOBB(
 			objects[i].userData.obb)) {
-			console.log("intersecting detected")
+			console.log("intersecting")
 			is_intersecting = true
-			
 			break
 		}
 	}
-
-	if (!is_intersecting) {
-
-		objects.push(mesh_line_seg)
-
-		previous_mesh = mesh_line_seg
-		line_counter += 1
-
-	} else {
-		previous_mesh.remove(pivot)
+	if (!is_intersecting){
 
 	}
-
+	
 
 	// for (let i = 0; i < objects.length - 2; i++) {
 
@@ -189,7 +175,7 @@ for (const mesh_i of objects) {
 		if (mesh_i.userData.obb.intersectsOBB(
 			mesh_j.userData.obb
 		)) {
-			console.log("intersection scanner")
+			// console.log("intersection")
 		}
 
 
