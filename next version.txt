@@ -1,0 +1,7 @@
+v1
+implement groups as pivot points
+and do random walk with no intersections
+
+done v1. 
+just need to clean up code first. 
+then i can think of next version. 
